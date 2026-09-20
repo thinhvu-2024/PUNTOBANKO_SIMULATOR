@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Punto Banco Simulator</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    overflow: hidden;
+    background: #050505;
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* =========================================================
+   GAME
+========================================================= */
+
+.game {
+    width: 100vw;
+    height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+}
+
+/* =========================================================
+   TOP BAR
+========================================================= */
+
+.topbar {
+    height: 48px;
+    flex-shrink: 0;
+
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 25px;
+
+    background: #080808;
+
+    font-size: 18px;
+}
+
+.game-title {
+    font-weight: bold;
+}
+
+.game-title span {
+    color: #ffc400;
+}
+
+.top-status {
+    position: absolute;
+
+    left: 50%;
+    transform: translateX(-50%);
+
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.table-area {
+    position: relative;
+
+    flex: 1;
+    min-height: 0;
+
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            ellipse at 50% 35%,
+            #925b2d 0%,
+            #75441f 35%,
+            #542c15 70%,
+            #291308 100%
+        );
+}
+
+.table-area::before {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    opacity: 0.05;
+
+    background-image:
+        repeating-linear-gradient(
+            20deg,
+            transparent 0,
+            transparent 3px,
+            white 4px
+        );
+
+    pointer-events: none;
+}
+
+/* =========================================================
+   DEALER TEXT
+========================================================= */
+
+.dealer {
+    position: absolute;
+
+    top: 22px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    color: rgba(255,255,255,.45);
+
+    font-size: 16px;
+    letter-spacing: 5px;
+}
+
+/* =========================================================
+   SHOES
+========================================================= */
+
+.shoe {
+    position: absolute;
+
+    top: 55px;
+
+    width: 250px;
+    height: 210px;
+
+    z-index: 5;
+}
+
+.shoe-left {
+    left: 4%;
+}
+
+.shoe-right {
+    right: 4%;
+    transform: scaleX(-1);
+}
+
+/* gouden behuizing */
+
+.shoe-body {
+    position: absolute;
+
+    left: 50px;
+    top: 10px;
+
+    width: 185px;
+    height: 120px;
+
+    transform: skewY(9deg);
+
+    border-radius: 8px 12px 15px 8px;
+
+    background:
+        linear-gradient(
+            115deg,
+            #68400c,
+            #b87913 18%,
+            #e2a529 40%,
+            #b96e0c 70%,
+            #693807
+        );
+
+    border: 2px solid rgba(255,215,100,.5);
+
+    box-shadow:
+        0 12px 18px rgba(0,0,0,.55),
+        inset 0 3px 5px rgba(255,255,255,.25),
+        inset 0 -5px 8px rgba(60,20,0,.5);
+}
+
+/* donkere achterkant */
+
+.shoe-body::before {
+    content: "";
+
+    position: absolute;
+
+    left: -16px;
+    bottom: 3px;
+
+    width: 28px;
+    height: 106px;
+
+    transform: skewY(-25deg);
+
+    background:
+        linear-gradient(
+            90deg,
+            #4c2a06,
+            #98600f
+        );
+
+    border-radius: 5px 0 0 5px;
+}
+
+/* stapel kaarten */
+
+.card-stack {
+    position: absolute;
+
+    left: 22px;
+    top: 15px;
+
+    width: 135px;
+    height: 75px;
+
+    transform: skewY(-9deg);
+
+    border: 1px solid #aaa;
+    border-radius: 3px;
+
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            #fff 0,
+            #fff 2px,
+            #d5d5d5 3px,
+            #fff 4px
+        );
+
+    box-shadow:
+        5px 5px 7px rgba(0,0,0,.35);
+}
+
+/* zichtbare kaart */
+
+.shoe-top-card {
+    position: absolute;
+
+    right: -4px;
+    top: 22px;
+
+    width: 65px;
+    height: 88px;
+
+    border: 4px solid white;
+    border-radius: 4px;
+
+    background-color: #e5abab;
+
+    background-image:
+        repeating-linear-gradient(
+            45deg,
+            rgba(150,30,30,.45) 0,
+            rgba(150,30,30,.45) 1px,
+            transparent 1px,
+            transparent 4px
+        ),
+        repeating-linear-gradient(
+            -45deg,
+            rgba(150,30,30,.3) 0,
+            rgba(150,30,30,.3) 1px,
+            transparent 1px,
+            transparent 4px
+        );
+
+    box-shadow:
+        2px 4px 7px rgba(0,0,0,.45);
+}
+
+/* =========================================================
+   TRANSPARANTE DISCARD HOLDER
+========================================================= */
+
+.shoe-front {
+    position: absolute;
+
+    left: 5px;
+    top: 80px;
+
+    width: 82px;
+    height: 120px;
+
+    border: 3px solid rgba(145,95,55,.75);
+
+    border-radius: 5px 5px 10px 10px;
+
+    background:
+        linear-gradient(
+            120deg,
+            rgba(255,210,150,.15),
+            rgba(120,60,20,.25),
+            rgba(255,180,100,.12)
+        );
+
+    box-shadow:
+        inset 0 0 12px rgba(255,210,160,.25),
+        3px 8px 12px rgba(0,0,0,.45);
+}
+
+.shoe-front::before {
+    content: "";
+
+    position: absolute;
+
+    left: 4px;
+    top: -18px;
+
+    width: 68px;
+    height: 30px;
+
+    transform: skewX(-18deg);
+
+    border: 2px solid rgba(160,100,55,.6);
+
+    background:
+        rgba(170,90,30,.12);
+}
+
+/* kaart onder in holder */
+
+.front-card {
+    position: absolute;
+
+    left: 9px;
+    bottom: 8px;
+
+    width: 60px;
+    height: 35px;
+
+    border: 3px solid white;
+    border-radius: 3px;
+
+    background-color: #e6abab;
+
+    background-image:
+        repeating-linear-gradient(
+            45deg,
+            rgba(150,20,20,.5) 0,
+            rgba(150,20,20,.5) 1px,
+            transparent 1px,
+            transparent 4px
+        ),
+        repeating-linear-gradient(
+            -45deg,
+            rgba(150,20,20,.3) 0,
+            rgba(150,20,20,.3) 1px,
+            transparent 1px,
+            transparent 4px
+        );
+}
+
+/* =========================================================
+   PLAYER / BANKER TITLES
+========================================================= */
+
+.hand-title {
+    position: absolute;
+
+    top: 75px;
+
+    font-size: 46px;
+    font-weight: 700;
+
+    color: #f6ead8;
+
+    text-shadow:
+        0 3px 4px rgba(0,0,0,.45);
+}
+
+.player-title {
+    left: 29%;
+}
+
+.banker-title {
+    right: 27%;
+}
+
+/* =========================================================
+   CENTER LINE
+========================================================= */
+
+.center-line {
+    position: absolute;
+
+    top: 70px;
+    left: 50%;
+
+    width: 3px;
+    height: 270px;
+
+    background:
+        rgba(255,245,220,.9);
+}
+
+/* =========================================================
+   CARD CONTAINERS
+========================================================= */
+
+.cards {
+    position: absolute;
+
+    top: 140px;
+
+    display: flex;
+
+    gap: 14px;
+}
+
+.player-cards {
+    left: 28%;
+}
+
+.banker-cards {
+    right: 27%;
+}
+
+/* =========================================================
+   GROTE SPEELKAART
+   125 x 180
+========================================================= */
+
+.playing-card {
+    position: relative;
+
+    width: 150px;
+    height: 216px;
+
+    overflow: hidden;
+
+    border: 1px solid #c8c8c8;
+    border-radius: 8px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ffffff 0%,
+            #fafafa 55%,
+            #e9e9e9 100%
+        );
+
+    box-shadow:
+        0 6px 10px rgba(0,0,0,.55),
+        inset 0 0 3px rgba(0,0,0,.15);
+}
+
+.red-card {
+    color: #d4382e;
+}
+
+.black-card {
+    color: #151515;
+}
+
+/* =========================================================
+   BOVENKANT KAART
+========================================================= */
+
+.card-top {
+    position: absolute;
+
+    top: 7px;
+    left: 10px;
+    right: 10px;
+
+    height: 58px;
+
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+}
+
+.rank {
+    font-size: 86px;
+    line-height: 55px;
+
+    font-weight: 800;
+
+    letter-spacing: -3px;
+}
+
+.suit {
+    font-family:
+        "Times New Roman",
+        serif;
+
+    font-size: 79px;
+    line-height: 52px;
+
+    font-weight: bold;
+}
+
+/* =========================================================
+   BARCODE
+========================================================= */
+
+.barcode-area {
+    position: absolute;
+
+    top: 49%;
+    left: 50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    width: 75px;
+    height: 36px;
+}
+
+.barcode {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    width: 48px;
+    height: 30px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    gap: 2px;
+}
+
+.barcode span {
+    display: block;
+
+    width: 100%;
+    height: 2px;
+
+    background: #aaa;
+}
+
+.barcode-area::before,
+.barcode-area::after {
+    content: "";
+
+    position: absolute;
+
+    top: 16px;
+
+    width: 5px;
+    height: 5px;
+
+    border-radius: 50%;
+
+    background: #aaa;
+}
+
+.barcode-area::before {
+    left: 0;
+}
+
+.barcode-area::after {
+    right: 0;
+}
+
+/* =========================================================
+   ONDERKANT KAART
+========================================================= */
+
+.card-bottom {
+    position: absolute;
+
+    left: 10px;
+    right: 10px;
+    bottom: 7px;
+
+    height: 58px;
+
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    transform:
+        rotate(180deg);
+}
+
+/* =========================================================
+   BOTTOM AREA
+========================================================= */
+
+.bottom {
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    height: 285px;
+
+    padding: 10px 30px;
+
+    display: flex;
+
+    gap: 15px;
+
+    background:
+        linear-gradient(
+            to bottom,
+            transparent,
+            rgba(0,0,0,.68)
+        );
+}
+
+/* =========================================================
+   HISTORY
+========================================================= */
+
+.history {
+    width: 31%;
+    height: 220px;
+
+    align-self: flex-end;
+
+    overflow: hidden;
+
+    color: black;
+
+    background: white;
+
+    border: 3px solid #333;
+    border-radius: 5px;
+}
+
+.history-header {
+    height: 38px;
+
+    display: flex;
+
+    align-items: center;
+
+    padding: 0 12px;
+
+    background:
+        #f4f4f4;
+
+    border-bottom:
+        2px solid #aaa;
+
+    font-size: 16px;
+
+    font-weight: bold;
+}
+
+.history-grid {
+    position: relative;
+
+    height:
+        calc(100% - 38px);
+
+    background-color:
+        white;
+
+    background-image:
+        linear-gradient(
+            #ddd 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            #ddd 1px,
+            transparent 1px
+        );
+
+    background-size:
+        30px 30px;
+}
+
+/* =========================================================
+   HISTORY DOTS
+========================================================= */
+
+.road {
+    position: absolute;
+
+    top: 5px;
+    left: 4px;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 27px);
+
+    gap: 3px;
+}
+
+.road-dot {
+    width: 27px;
+    height: 27px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    color: white;
+
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.punto {
+    background:
+        #1764b0;
+}
+
+.banko {
+    background:
+        #bd1d23;
+}
+
+.tie {
+    background:
+        #13863c;
+}
+
+/* =========================================================
+   BETTING AREA
+========================================================= */
+
+.betting {
+    flex: 1;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: flex-end;
+}
+
+.bet-box {
+    width: 100%;
+
+    max-width: 670px;
+
+    height: 195px;
+
+    display: flex;
+
+    overflow: hidden;
+
+    border-radius:
+        20px 20px 35px 35px;
+
+    box-shadow:
+        0 7px 18px
+        rgba(0,0,0,.65);
+}
+
+.player-bet,
+.tie-bet,
+.banker-bet {
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: flex-end;
+    align-items: center;
+
+    padding-bottom: 18px;
+
+    cursor: pointer;
+
+    font-weight: bold;
+}
+
+.player-bet {
+    flex: 1;
+
+    background:
+        linear-gradient(
+            #185492,
+            #07366c
+        );
+}
+
+.tie-bet {
+    width: 190px;
+
+    border-radius:
+        0 0 70px 70px;
+
+    background:
+        linear-gradient(
+            #129341,
+            #05652b
+        );
+}
+
+.banker-bet {
+    flex: 1;
+
+    background:
+        linear-gradient(
+            #bf2027,
+            #8c0a10
+        );
+}
+
+.bet-name {
+    font-size: 27px;
+}
+
+.payout {
+    margin-top: 5px;
+
+    font-size: 18px;
+
+    font-weight: normal;
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.footer {
+    height: 58px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    padding: 0 30px;
+
+    background:
+        #050505;
+
+    font-size: 17px;
+}
+
+.balance {
+    margin-right: 80px;
+}
+
+.money {
+    margin-left: 8px;
+
+    color:
+        #ffc400;
+
+    font-size: 19px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="game">
+
+    <!-- TOP BAR -->
+
+    <div class="topbar">
+
+        <div class="game-title">
+
+            Grand Punto Banco
+
+            <span>
+                € 1-5.000
+            </span>
+
+        </div>
+
+        <div class="top-status">
+            PLACE YOUR BETS
+        </div>
+
+    </div>
+
+
+    <!-- TABLE -->
+
+    <main class="table-area">
+
+        <div class="dealer">
+            PUNTO BANCO
+        </div>
+
+
+        <!-- =====================================================
+             LEFT SHOE
+        ====================================================== -->
+
+        <div class="shoe shoe-left">
+
+            <div class="shoe-body">
+
+                <div class="card-stack">
+
+                    <div class="shoe-top-card"></div>
+
+                </div>
+
+            </div>
+
+            <div class="shoe-front">
+
+                <div class="front-card"></div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             RIGHT SHOE
+        ====================================================== -->
+
+        <div class="shoe shoe-right">
+
+            <div class="shoe-body">
+
+                <div class="card-stack">
+
+                    <div class="shoe-top-card"></div>
+
+                </div>
+
+            </div>
+
+            <div class="shoe-front">
+
+                <div class="front-card"></div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             PLAYER
+        ====================================================== -->
+
+        <div class="hand-title player-title">
+            PLAYER
+        </div>
+
+
+        <div class="cards player-cards">
+
+
+            <!-- 4 HEARTS -->
+
+            <div class="playing-card red-card">
+
+                <div class="card-top">
+
+                    <span class="rank">
+                        4
+                    </span>
+
+                    <span class="suit">
+                        ♥
+                    </span>
+
+                </div>
+
+
+                <div class="barcode-area">
+
+                    <div class="barcode">
+
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card-bottom">
+
+                    <span class="rank">
+                        4
+                    </span>
+
+                    <span class="suit">
+                        ♥
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- 7 DIAMONDS -->
+
+            <div class="playing-card red-card">
+
+                <div class="card-top">
+
+                    <span class="rank">
+                        7
+                    </span>
+
+                    <span class="suit">
+                        ♦
+                    </span>
+
+                </div>
+
+
+                <div class="barcode-area">
+
+                    <div class="barcode">
+
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card-bottom">
+
+                    <span class="rank">
+                        7
+                    </span>
+
+                    <span class="suit">
+                        ♦
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- CENTER LINE -->
+
+        <div class="center-line"></div>
+
+
+        <!-- =====================================================
+             BANKER
+        ====================================================== -->
+
+        <div class="hand-title banker-title">
+            BANKER
+        </div>
+
+
+        <div class="cards banker-cards">
+
+
+            <!-- ACE DIAMONDS -->
+
+            <div class="playing-card red-card">
+
+                <div class="card-top">
+
+                    <span class="rank">
+                        A
+                    </span>
+
+                    <span class="suit">
+                        ♦
+                    </span>
+
+                </div>
+
+
+                <div class="barcode-area">
+
+                    <div class="barcode">
+
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card-bottom">
+
+                    <span class="rank">
+                        A
+                    </span>
+
+                    <span class="suit">
+                        ♦
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- 9 SPADES -->
+
+            <div class="playing-card black-card">
+
+                <div class="card-top">
+
+                    <span class="rank">
+                        9
+                    </span>
+
+                    <span class="suit">
+                        ♠
+                    </span>
+
+                </div>
+
+
+                <div class="barcode-area">
+
+                    <div class="barcode">
+
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card-bottom">
+
+                    <span class="rank">
+                        9
+                    </span>
+
+                    <span class="suit">
+                        ♠
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             BOTTOM
+        ====================================================== -->
+
+        <section class="bottom">
+
+
+            <!-- HISTORY -->
+
+            <div class="history">
+
+                <div class="history-header">
+
+                    # 14
+
+                    &nbsp;&nbsp;
+
+                    <span style="color:#1764b0">
+                        ● P 9
+                    </span>
+
+                    &nbsp;&nbsp;
+
+                    <span style="color:#bd1d23">
+                        ● B 3
+                    </span>
+
+                    &nbsp;&nbsp;
+
+                    <span style="color:#13863c">
+                        ● T 2
+                    </span>
+
+                </div>
+
+
+                <div class="history-grid">
+
+                    <div class="road">
+
+                        <div class="road-dot banko">5</div>
+                        <div class="road-dot punto">7</div>
+                        <div class="road-dot tie">8</div>
+
+                        <div class="road-dot banko">9</div>
+                        <div class="road-dot tie">1</div>
+                        <div class="road-dot punto">4</div>
+
+                        <div class="road-dot punto">7</div>
+                        <div class="road-dot punto">2</div>
+                        <div></div>
+
+                        <div class="road-dot punto">7</div>
+                        <div class="road-dot banko">7</div>
+                        <div></div>
+
+                        <div class="road-dot punto">4</div>
+                        <div class="road-dot punto">9</div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- BETTING -->
+
+            <div class="betting">
+
+                <div class="bet-box">
+
+
+                    <div class="player-bet">
+
+                        <div class="bet-name">
+                            PLAYER
+                        </div>
+
+                        <div class="payout">
+                            1:1
+                        </div>
+
+                    </div>
+
+
+                    <div class="tie-bet">
+
+                        <div class="bet-name">
+                            TIE
+                        </div>
+
+                        <div class="payout">
+                            8:1
+                        </div>
+
+                    </div>
+
+
+                    <div class="banker-bet">
+
+                        <div class="bet-name">
+                            BANKER
+                        </div>
+
+                        <div class="payout">
+                            0.95:1
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- FOOTER -->
+
+    <footer class="footer">
+
+        <div class="balance">
+
+            Balance
+
+            <span class="money">
+                € 1.000,00
+            </span>
+
+        </div>
+
+
+        <div>
+
+            Bet
+
+            <span class="money">
+                € 0,00
+            </span>
+
+        </div>
+
+    </footer>
+
+</div>
+
+</body>
+</html>
