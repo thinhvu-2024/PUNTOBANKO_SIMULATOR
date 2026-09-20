@@ -340,24 +340,14 @@ select {
    PLAYER / BANKER CARDS
 ========================================================= */
 
-.hand-title-punto {
+.hand-title {
   position: absolute;
   top: 65px;
 
   font-size: 46px;
   font-weight: 700;
 
-  color: #296ed6;
-}
-
-.hand-title-banko {
-  position: absolute;
-  top: 65px;
-
-  font-size: 46px;
-  font-weight: 700;
-
-  color: #bd1523;
+  color: #f6ead8;
 }
 
 .player-title {
@@ -1028,54 +1018,6 @@ select {
 }
 
 /* =========================================================
-   BET ACTIONS (undo / rebet / double)
-========================================================= */
-
-.bet-actions {
-  display: flex;
-
-  justify-content: center;
-
-  gap: 10px;
-
-  margin-top: 8px;
-}
-
-.bet-action-btn {
-  padding: 7px 16px;
-
-  border-radius: 20px;
-
-  border: 1px solid rgba(255, 196, 0, 0.35);
-
-  background: #1c1c1c;
-
-  color: #ffc400;
-
-  font-family: "Inter", sans-serif;
-  font-size: 13px;
-  font-weight: 600;
-
-  cursor: pointer;
-
-  transition: background 0.15s, transform 0.1s, opacity 0.15s;
-}
-
-.bet-action-btn:hover:not(:disabled) {
-  background: #2a2a2a;
-  border-color: #ffc400;
-}
-
-.bet-action-btn:active:not(:disabled) {
-  transform: scale(0.95);
-}
-
-.bet-action-btn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-
-/* =========================================================
    CHIPS
 ========================================================= */
 
@@ -1453,7 +1395,7 @@ select {
 
         <!-- PLAYER -->
 
-        <div class="hand-title-punto player-title">PLAYER</div>
+        <div class="hand-title player-title">PLAYER</div>
 
         <div id="playerCards" class="cards player-cards"></div>
 
@@ -1463,7 +1405,7 @@ select {
 
         <!-- BANKER -->
 
-        <div class="hand-title-banko banker-title">BANKER</div>
+        <div class="hand-title banker-title">BANKER</div>
 
         <div id="bankerCards" class="cards banker-cards"></div>
 
@@ -1545,14 +1487,6 @@ select {
 
                 <div id="bankerBetDisplay" class="placed-bet">€ 0,00</div>
               </div>
-            </div>
-
-            <!-- BET ACTIONS -->
-
-            <div class="bet-actions">
-              <button id="undoBetButton" class="bet-action-btn" disabled>↶ Undo</button>
-              <button id="rebetButton" class="bet-action-btn" disabled>↻ Rebet</button>
-              <button id="doubleBetButton" class="bet-action-btn" disabled>×2 Double</button>
             </div>
 
             <!-- CHIPS -->
@@ -1859,12 +1793,6 @@ const historyRoad = document.getElementById("historyRoad");
 
 const dealButton = document.getElementById("dealButton");
 
-const undoBetButton = document.getElementById("undoBetButton");
-
-const rebetButton = document.getElementById("rebetButton");
-
-const doubleBetButton = document.getElementById("doubleBetButton");
-
 const autoDealCheckbox = document.getElementById("autoDeal");
 
 const burnArea = document.getElementById("burnArea");
@@ -1924,16 +1852,6 @@ let ties = 0;
 let balance = Number(config.startBalance);
 
 let bets = {
-  PLAYER: 0,
-
-  TIE: 0,
-
-  BANKER: 0,
-};
-
-let betActionStack = [];
-
-let lastBets = {
   PLAYER: 0,
 
   TIE: 0,
@@ -2021,8 +1939,6 @@ function setBettingOpen(open) {
       chip.classList.add("disabled");
     }
   });
-
-  updateBetActionButtons();
 }
 
 /* =========================================================
@@ -2060,11 +1976,7 @@ function placeBet(target, amount) {
 
   balance -= amount;
 
-  betActionStack.push({ target: target, amount: amount });
-
   updateMoneyDisplay();
-
-  updateBetActionButtons();
 }
 
 /* =========================================================
@@ -2150,95 +2062,7 @@ function clearBets() {
 
   bets.BANKER = 0;
 
-  betActionStack = [];
-
   updateMoneyDisplay();
-
-  updateBetActionButtons();
-}
-
-/* =========================================================
-   UNDO / REBET / DOUBLE
-========================================================= */
-
-function undoLastBet() {
-  if (!bettingOpen || gameBusy || shoeBusy) {
-    return;
-  }
-
-  const lastAction = betActionStack.pop();
-
-  if (!lastAction) {
-    return;
-  }
-
-  bets[lastAction.target] -= lastAction.amount;
-
-  balance += lastAction.amount;
-
-  updateMoneyDisplay();
-
-  updateBetActionButtons();
-}
-
-function rebetLast() {
-  if (!bettingOpen || gameBusy || shoeBusy) {
-    return;
-  }
-
-  const currentTotal = bets.PLAYER + bets.TIE + bets.BANKER;
-
-  if (currentTotal > 0) {
-    topStatus.textContent = "CLEAR YOUR BET FIRST";
-
-    return;
-  }
-
-  const lastTotal = lastBets.PLAYER + lastBets.TIE + lastBets.BANKER;
-
-  if (lastTotal === 0) {
-    topStatus.textContent = "NO PREVIOUS BET";
-
-    return;
-  }
-
-  ["PLAYER", "TIE", "BANKER"].forEach((side) => {
-    if (lastBets[side] > 0) {
-      placeBet(side, lastBets[side]);
-    }
-  });
-}
-
-function doubleBet() {
-  if (!bettingOpen || gameBusy || shoeBusy) {
-    return;
-  }
-
-  const currentTotal = bets.PLAYER + bets.TIE + bets.BANKER;
-
-  if (currentTotal === 0) {
-    topStatus.textContent = "PLACE A BET FIRST";
-
-    return;
-  }
-
-  ["PLAYER", "TIE", "BANKER"].forEach((side) => {
-    if (bets[side] > 0) {
-      placeBet(side, bets[side]);
-    }
-  });
-}
-
-function updateBetActionButtons() {
-  const currentTotal = bets.PLAYER + bets.TIE + bets.BANKER;
-
-  const lastTotal = lastBets.PLAYER + lastBets.TIE + lastBets.BANKER;
-
-  undoBetButton.disabled = !bettingOpen || betActionStack.length === 0;
-
-  rebetButton.disabled = !bettingOpen || currentTotal > 0 || lastTotal === 0;
-
-  doubleBetButton.disabled = !bettingOpen || currentTotal === 0;
 }
 
 /* =========================================================
@@ -2866,16 +2690,6 @@ async function dealRound() {
 
   settleBets(winner);
 
-  const roundTotal = bets.PLAYER + bets.TIE + bets.BANKER;
-
-  if (roundTotal > 0) {
-    lastBets = {
-      PLAYER: bets.PLAYER,
-      TIE: bets.TIE,
-      BANKER: bets.BANKER,
-    };
-  }
-
   await wait(config.nextRoundTime * 1000);
 
   gameBusy = false;
@@ -3063,12 +2877,6 @@ autoDealCheckbox.addEventListener(
 /* =========================================================
    MANUAL DEAL
 ========================================================= */
-
-undoBetButton.addEventListener("click", undoLastBet);
-
-rebetButton.addEventListener("click", rebetLast);
-
-doubleBetButton.addEventListener("click", doubleBet);
 
 dealButton.addEventListener(
   "click",
