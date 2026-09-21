@@ -319,14 +319,23 @@ select {
    PLAYER / BANKER CARDS
 ========================================================= */
 
-.hand-title {
-    position: absolute;
-    top: 65px;
+.hand-title-punto {
+  position: absolute;
+  top: 65px;
 
-    font-size: 46px;
-    font-weight: 700;
+  font-size: 46px;
+  font-weight: 700;
 
-    color: #f6ead8;
+  color: #296ed6;
+}				   
+.hand-title-banko {
+  position: absolute;
+  top: 65px;
+
+  font-size: 46px;
+  font-weight: 700;
+
+  color: #bd1523;
 }
 
 .player-title {
@@ -827,20 +836,34 @@ select {
 }
 
 .deal-button {
-    padding: 10px 18px;
+  padding: 12px 26px;
 
-    border: 1px solid transparent;
+  border: 2px solid #ffe600;
 
-    background: transparent;
+  border-radius: 30px;
 
-    color: #ffe600;
+  background: rgba(255, 230, 0, 0.08);
 
-    font-size: 20px;
-    font-weight: bold;
+  color: #ffe600;
 
-    cursor: pointer;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 1px;
+
+  cursor: pointer;
+
+  transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
 }
 
+.deal-button:hover:not(:disabled) {
+  background: rgba(255, 230, 0, 0.18);
+  box-shadow: 0 0 18px rgba(255, 230, 0, 0.35);
+}
+
+.deal-button:active:not(:disabled) {
+  transform: scale(0.96);
+}
 .deal-button:disabled {
     opacity: .4;
     cursor: default;
@@ -904,20 +927,28 @@ select {
 }
 
 .bet-target {
-    position: relative;
+  position: relative;
 
-    display: flex;
+  display: flex;
 
-    flex-direction: column;
+  flex-direction: column;
 
-    justify-content: center;
-    align-items: center;
+  justify-content: center;
+  align-items: center;
 
-    font-weight: bold;
+  font-weight: bold;
 
-    transition:
-        transform .15s,
-        filter .15s;
+  cursor: pointer;
+						
+
+  transition:
+    transform 0.15s,
+    filter 0.15s;
+}
+
+.bet-target:hover {
+  filter: brightness(1.12);
+					
 }
 
 .bet-target.drag-over {
@@ -999,6 +1030,53 @@ select {
 }
 
 /* =========================================================
+   BET ACTIONS (undo / rebet / double)
+========================================================= */
+
+.bet-actions {
+  display: flex;
+
+  justify-content: center;
+
+  gap: 10px;
+
+  margin-top: 8px;
+}
+
+.bet-action-btn {
+  padding: 7px 16px;
+
+  border-radius: 20px;
+
+  border: 1px solid rgba(255, 196, 0, 0.35);
+
+  background: #1c1c1c;
+
+  color: #ffc400;
+
+  font-family: "Inter", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: background 0.15s, transform 0.1s, opacity 0.15s;
+}
+
+.bet-action-btn:hover:not(:disabled) {
+  background: #2a2a2a;
+  border-color: #ffc400;
+}
+
+.bet-action-btn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.bet-action-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+/* =========================================================
    CHIPS
 ========================================================= */
 
@@ -1072,7 +1150,11 @@ select {
 }
 
 .chip-1 {
-    background: #d02b2b;
+     background: #d02b2b;
+}
+
+.chip-2 {
+  background: #d02b2b;
 }
 
 .chip-5 {
@@ -1088,6 +1170,10 @@ select {
     background: #178144;
 }
 
+.chip-50 {
+    background: #e87518;
+}
+
 .chip-100 {
     background: #111;
 }
@@ -1096,6 +1182,9 @@ select {
     background: #6637a8;
 }
 
+.chip-500 {
+    background: #176f78;
+}					  
 .chip-1000 {
     background: #7c1717;
 }
@@ -1121,6 +1210,22 @@ select {
 
 .balance {
     margin-right: 80px;
+display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 8px 16px;
+  border-radius: 30px;
+
+  background: #0d0d0d;
+  border: 1px solid rgba(255, 196, 0, 0.3);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.6);
+
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
 }
 
 .money {
@@ -1236,13 +1341,25 @@ select {
 }
 
 .btn {
-    padding: 10px 15px;
+  padding: 10px 18px;
 
-    border-radius: 7px;
+  border-radius: 8px;
 
-    border: 1px solid #ccc;
+  border: 1px solid rgba(255, 255, 255, 0.15);
 
-    cursor: pointer;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: transform 0.1s, filter 0.15s;
+}
+
+.btn:hover {
+  filter: brightness(1.1);
+}
+
+.btn:active {
+  transform: scale(0.97);
 }
 
 .btn-cancel {
@@ -1366,7 +1483,7 @@ select {
 
         <!-- PLAYER -->
 
-        <div class="hand-title player-title">
+        <div class="hand-title-punto  player-title">
             PLAYER
         </div>
 
@@ -1387,7 +1504,7 @@ select {
 
         <!-- BANKER -->
 
-        <div class="hand-title banker-title">
+        <div class="hand-title-banko banker-title">
             BANKER
         </div>
 
@@ -1530,8 +1647,6 @@ select {
                         </div>
 
                     </div>
-
-
                     <div
                         class="tie-bet bet-target"
                         data-bet="TIE">
@@ -1580,94 +1695,28 @@ select {
                 </div>
 
 
+ <div class="bet-actions">
+              <button id="undoBetButton" class="bet-action-btn" disabled>↶ Undo</button>
+              <button id="rebetButton" class="bet-action-btn" disabled>↻ Rebet</button>
+              <button id="doubleBetButton" class="bet-action-btn" disabled>×2 Double</button>
+            </div>
+
                 <!-- CHIPS -->
 
-                <div
-                    class="chip-bar"
-                    id="chipBar">
-
-
-                    <div
-                        class="chip chip-050"
-                        draggable="true"
-                        data-value="0.5">
-
-                        €0,50
-
-                    </div>
-
-
-                    <div
-                        class="chip chip-1"
-                        draggable="true"
-                        data-value="1">
-
-                        €1
-
-                    </div>
-
-
-                    <div
-                        class="chip chip-5"
-                        draggable="true"
-                        data-value="5">
-
-                        €5
-
-                    </div>
-
-
-                    <div
-                        class="chip chip-10"
-                        draggable="true"
-                        data-value="10">
-
-                        €10
-
-                    </div>
-
-
-                    <div
-                        class="chip chip-25"
-                        draggable="true"
-                        data-value="25">
-
-                        €25
-
-                    </div>
-
-
-                    <div
-                        class="chip chip-100"
-                        draggable="true"
-                        data-value="100">
-
-                        €100
-
-                    </div>
-
-
-                    <div
-                        class="chip chip-250"
-                        draggable="true"
-                        data-value="250">
-
-                        €250
-
-                    </div>
-
-
-                    <div
-                        class="chip chip-1000"
-                        draggable="true"
-                        data-value="1000">
-
-                        €1000
-
-                    </div>
-
-
-                </div>
+            <div class="chip-bar" id="chipBar">
+              <div class="chip chip-050" draggable="true" data-value="0.5">€0,50</div>
+              <div class="chip chip-1" draggable="true" data-value="1">€1</div>
+			  <div class="chip chip-1" draggable="true" data-value="2">€2</div>
+              <div class="chip chip-5" draggable="true" data-value="5">€5</div>
+              <div class="chip chip-10" draggable="true" data-value="10">€10</div>
+			  <div class="chip chip-10" draggable="true" data-value="20">€20</div>
+              <div class="chip chip-25" draggable="true" data-value="25">€25</div>
+			  <div class="chip chip-50" draggable="true" data-value="50"> €50 </div>
+              <div class="chip chip-100" draggable="true" data-value="100">€100</div>
+              <div class="chip chip-250" draggable="true" data-value="250">€250</div>
+			  <div class="chip chip-50" draggable="true" data-value="500"> €500 </div>
+              <div class="chip chip-1000" draggable="true" data-value="1000">€1000</div>
+            </div>
 
             </div>
 
@@ -2106,6 +2155,15 @@ function saveConfig() {
 const settingsButton =
     document.getElementById("settingsButton");
 
+					   
+const undoBetButton = document.getElementById("undoBetButton");
+
+					  
+const rebetButton = document.getElementById("rebetButton");
+
+						  
+const doubleBetButton = document.getElementById("doubleBetButton");
+
 const settingsOverlay =
     document.getElementById("settingsOverlay");
 
@@ -2218,6 +2276,18 @@ let balance =
 
 
 let bets = {
+
+    PLAYER: 0,
+
+    TIE: 0,
+
+    BANKER: 0
+
+};
+
+let betActionStack = [];
+
+let lastBets = {
 
     PLAYER: 0,
 
@@ -2391,6 +2461,8 @@ function setBettingOpen(open) {
 
         );
 
+    updateBetActionButtons();
+
 }
 
 
@@ -2471,7 +2543,12 @@ function placeBet(
         amount;
 
 
+    betActionStack.push({ target: target, amount: amount });
+
+
     updateMoneyDisplay();
+
+    updateBetActionButtons();
 
 }
 
@@ -2637,11 +2714,103 @@ function clearBets() {
 
     bets.BANKER = 0;
 
+    betActionStack = [];
+
 
     updateMoneyDisplay();
 
+    updateBetActionButtons();
+
 }
 
+/* =========================================================
+   UNDO / REBET / DOUBLE
+========================================================= */
+
+function undoLastBet() {
+
+    if (!bettingOpen || gameBusy || shoeBusy) {
+        return;
+    }
+
+    const lastAction = betActionStack.pop();
+
+    if (!lastAction) {
+        return;
+    }
+
+    bets[lastAction.target] -= lastAction.amount;
+
+    balance += lastAction.amount;
+
+    updateMoneyDisplay();
+
+    updateBetActionButtons();
+
+}
+
+function rebetLast() {
+
+    if (!bettingOpen || gameBusy || shoeBusy) {
+        return;
+    }
+
+    const currentTotal = bets.PLAYER + bets.TIE + bets.BANKER;
+
+    if (currentTotal > 0) {
+        topStatus.textContent = "CLEAR YOUR BET FIRST";
+        return;
+    }
+
+    const lastTotal = lastBets.PLAYER + lastBets.TIE + lastBets.BANKER;
+
+    if (lastTotal === 0) {
+        topStatus.textContent = "NO PREVIOUS BET";
+        return;
+    }
+
+    ["PLAYER", "TIE", "BANKER"].forEach(side => {
+        if (lastBets[side] > 0) {
+            placeBet(side, lastBets[side]);
+        }
+    });
+
+}
+
+function doubleBet() {
+
+    if (!bettingOpen || gameBusy || shoeBusy) {
+        return;
+    }
+
+    const currentTotal = bets.PLAYER + bets.TIE + bets.BANKER;
+
+    if (currentTotal === 0) {
+        topStatus.textContent = "PLACE A BET FIRST";
+        return;
+    }
+
+    ["PLAYER", "TIE", "BANKER"].forEach(side => {
+        if (bets[side] > 0) {
+            placeBet(side, bets[side]);
+        }
+    });
+
+}
+
+function updateBetActionButtons() {
+
+    const currentTotal = bets.PLAYER + bets.TIE + bets.BANKER;
+
+    const lastTotal = lastBets.PLAYER + lastBets.TIE + lastBets.BANKER;
+
+    undoBetButton.disabled = !bettingOpen || betActionStack.length === 0;
+
+    rebetButton.disabled = !bettingOpen || currentTotal > 0 || lastTotal === 0;
+
+    doubleBetButton.disabled = !bettingOpen || currentTotal === 0;
+
+}
 
 /* =========================================================
    PAYOUT
@@ -2652,6 +2821,12 @@ function settleBets(winner) {
     const playerBet = bets.PLAYER;
     const tieBet    = bets.TIE;
     const bankerBet = bets.BANKER;
+
+    const roundTotal = playerBet + tieBet + bankerBet;
+
+    if (roundTotal > 0) {
+        lastBets = { PLAYER: playerBet, TIE: tieBet, BANKER: bankerBet };
+    }
 
     let returnedMoney = 0;
 
@@ -4264,6 +4439,12 @@ autoDealCheckbox.addEventListener(
 /* =========================================================
    MANUAL DEAL
 ========================================================= */
+
+undoBetButton.addEventListener("click", undoLastBet);
+
+rebetButton.addEventListener("click", rebetLast);
+
+doubleBetButton.addEventListener("click", doubleBet);
 
 dealButton.addEventListener(
 
